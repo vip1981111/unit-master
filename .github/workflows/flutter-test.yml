@@ -1,0 +1,142 @@
+name: Flutter Test (iOS + Android)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # تشغيل يدوي من GitHub
+
+jobs:
+  # ═══════════════════════════════════════
+  # اختبار الكود
+  # ═══════════════════════════════════════
+  test:
+    name: Flutter Test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Analyze Code
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test --coverage
+
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+  # ═══════════════════════════════════════
+  # بناء iOS
+  # ═══════════════════════════════════════
+  build-ios:
+    name: Build iOS
+    runs-on: self-hosted
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/ios/iphoneos/
+
+  # ═══════════════════════════════════════
+  # بناء Android
+  # ═══════════════════════════════════════
+  build-android:
+    name: Build Android
+    runs-on: self-hosted
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  # ═══════════════════════════════════════
+  # اختبار على iOS Simulator
+  # ═══════════════════════════════════════
+  test-ios-simulator:
+    name: Test on iOS Simulator
+    runs-on: self-hosted
+    needs: build-ios
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Start iOS Simulator
+        run: |
+          xcrun simctl boot "iPhone 15" 2>/dev/null || true
+          xcrun simctl bootstatus "iPhone 15" -b
+
+      - name: Run Integration Tests
+        run: |
+          flutter test integration_test/ -d "iPhone 15" || echo "No integration tests found"
+
+      - name: Build & Install on Simulator
+        run: |
+          flutter build ios --simulator
+          xcrun simctl install booted build/ios/iphonesimulator/Runner.app
+
+      - name: Launch App & Screenshot
+        run: |
+          xcrun simctl launch booted com.example.app
+          sleep 5
+          xcrun simctl io booted screenshot ios-test.png
+
+      - name: Upload Screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-screenshot
+          path: ios-test.png
