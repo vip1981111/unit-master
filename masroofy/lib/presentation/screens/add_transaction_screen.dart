@@ -7,19 +7,27 @@ import '../providers/app_provider.dart';
 import '../providers/transaction_provider.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  const AddTransactionScreen({super.key});
+  final TransactionType? initialType;
+
+  const AddTransactionScreen({super.key, this.initialType});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
 }
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
-  TransactionType _type = TransactionType.expense;
+  late TransactionType _type;
   final _amountController = TextEditingController();
   final _titleController = TextEditingController();
   final _noteController = TextEditingController();
   String? _selectedCategoryId;
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _type = widget.initialType ?? TransactionType.expense;
+  }
 
   @override
   Widget build(BuildContext context) {

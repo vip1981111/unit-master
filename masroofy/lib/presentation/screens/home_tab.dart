@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../data/models/transaction_model.dart';
 import '../providers/app_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/transaction_item.dart';
 import '../widgets/quick_actions.dart';
+import 'add_transaction_screen.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -64,7 +66,18 @@ class HomeTab extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: QuickActions(isArabic: isArabic),
+              child: QuickActions(
+                isArabic: isArabic,
+                onAddExpense: () => _showAddTransaction(context, TransactionType.expense),
+                onAddIncome: () => _showAddTransaction(context, TransactionType.income),
+                onTransfer: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isArabic ? 'قريباً!' : 'Coming soon!'),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
 
@@ -161,6 +174,15 @@ class HomeTab extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddTransaction(BuildContext context, TransactionType type) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddTransactionScreen(initialType: type),
     );
   }
 }
