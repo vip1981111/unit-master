@@ -1,0 +1,62 @@
+name: expense_tracker
+description: A simple and beautiful expense tracking app to manage your finances.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.1
+
+  # Database
+  sqflite: ^2.3.0
+  path: ^1.8.3
+
+  # UI Components
+  cupertino_icons: ^1.0.6
+  fl_chart: ^0.66.0
+  intl: ^0.18.1
+
+  # Storage
+  shared_preferences: ^2.2.2
+
+  # Ads (AdMob)
+  google_mobile_ads: ^4.0.0
+
+  # In-App Purchase
+  in_app_purchase: ^3.1.13
+
+  # Icons
+  flutter_launcher_icons: ^0.13.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#4CAF50"
+  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo-Bold.ttf
+          weight: 700
