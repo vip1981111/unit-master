@@ -57,11 +57,11 @@ class QuickActions extends StatelessWidget {
     required IconData icon,
     required String label,
     required Color color,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
   }) {
     return Card(
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap ?? () {},
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
