@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../providers/app_provider.dart';
+import '../providers/transaction_provider.dart';
+import 'export_screen.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -71,15 +73,14 @@ class SettingsTab extends StatelessWidget {
           _buildSectionTitle(isArabic ? 'البيانات' : 'Data'),
           _buildSettingsTile(
             icon: Icons.backup_outlined,
-            title: isArabic ? 'نسخ احتياطي' : 'Backup',
-            subtitle: isArabic ? 'حفظ على iCloud' : 'Save to iCloud',
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.file_download_outlined,
-            title: isArabic ? 'تصدير البيانات' : 'Export Data',
-            subtitle: isArabic ? 'PDF أو Excel' : 'PDF or Excel',
-            onTap: () {},
+            title: isArabic ? 'نسخ احتياطي وتصدير' : 'Backup & Export',
+            subtitle: isArabic ? 'تصدير CSV أو نسخة احتياطية' : 'Export CSV or backup',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ExportScreen()),
+              );
+            },
           ),
           _buildSettingsTile(
             icon: Icons.delete_outline,
@@ -314,8 +315,16 @@ class SettingsTab extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
+              final transactionProvider = context.read<TransactionProvider>();
+              transactionProvider.clearAllTransactions();
               Navigator.pop(context);
-              // TODO: Delete all data
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    isArabic ? 'تم حذف جميع البيانات' : 'All data deleted',
+                  ),
+                ),
+              );
             },
             style: TextButton.styleFrom(foregroundColor: AppTheme.expenseColor),
             child: Text(isArabic ? 'حذف' : 'Delete'),

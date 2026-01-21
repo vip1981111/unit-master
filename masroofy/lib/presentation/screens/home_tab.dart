@@ -9,6 +9,8 @@ import '../widgets/balance_card.dart';
 import '../widgets/transaction_item.dart';
 import '../widgets/quick_actions.dart';
 import 'add_transaction_screen.dart';
+import 'all_transactions_screen.dart';
+import 'transfer_screen.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -71,10 +73,11 @@ class HomeTab extends StatelessWidget {
                 onAddExpense: () => _showAddTransaction(context, TransactionType.expense),
                 onAddIncome: () => _showAddTransaction(context, TransactionType.income),
                 onTransfer: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(isArabic ? 'قريباً!' : 'Coming soon!'),
-                    ),
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const TransferScreen(),
                   );
                 },
               ),
@@ -97,7 +100,12 @@ class HomeTab extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      // TODO: View all
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllTransactionsScreen(),
+                        ),
+                      );
                     },
                     child: Text(isArabic ? 'عرض الكل' : 'View All'),
                   ),
