@@ -289,10 +289,173 @@ class BudgetTab extends StatelessWidget {
   }
 
   void _showAddBudget(BuildContext context, bool isArabic) {
-    // TODO: Implement add budget dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isArabic ? 'قريباً...' : 'Coming soon...'),
+    final transactionProvider = context.read<TransactionProvider>();
+    final budgetProvider = context.read<BudgetProvider>();
+    final appProvider = context.read<AppProvider>();
+
+    final nameController = TextEditingController();
+    final amountController = TextEditingController();
+    String? selectedCategoryId;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            left: 24,
+            right: 24,
+            top: 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isArabic ? 'إنشاء ميزانية جديدة' : 'Create New Budget',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: isArabic ? 'اسم الميزانية' : 'Budget Name',
+                  prefixIcon: const Icon(Icons.edit),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: amountController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  labelText: isArabic ? 'المبلغ' : 'Amount',
+                  prefixIcon: const Icon(Icons.attach_money),
+                  suffixText: appProvider.currencySymbol,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isArabic ? 'الفئة' : 'Category',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: transactionProvider.expenseCategories.map((cat) {
+                  final isSelected = selectedCategoryId == cat.id;
+                  return GestureDetector(
+                    onTap: () => setState(() => selectedCategoryId = cat.id),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? cat.color.withOpacity(0.2)
+                            : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected ? cat.color : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(cat.icon, style: const TextStyle(fontSize: 18)),
+                          const SizedBox(width: 6),
+                          Text(
+                            isArabic ? cat.name : cat.nameEn,
+                            style: TextStyle(
+                              fontWeight:
+                                  isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? cat.color : Colors.grey[700],
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final amount = double.tryParse(amountController.text);
+                    if (amount == null || amount <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(isArabic
+                              ? 'أدخل مبلغ صحيح'
+                              : 'Enter a valid amount'),
+                        ),
+                      );
+                      return;
+                    }
+                    if (selectedCategoryId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text(isArabic ? 'اختر فئة' : 'Select a category'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final name = nameController.text.trim().isNotEmpty
+                        ? nameController.text.trim()
+                        : (isArabic ? 'ميزانية' : 'Budget');
+
+                    final now = DateTime.now();
+                    budgetProvider.addBudget(
+                      name: name,
+                      amount: amount,
+                      categoryId: selectedCategoryId!,
+                      startDate: DateTime(now.year, now.month, 1),
+                      endDate: DateTime(now.year, now.month + 1, 0),
+                    );
+
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    isArabic ? 'إنشاء' : 'Create',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

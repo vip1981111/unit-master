@@ -3,10 +3,16 @@ import '../../core/theme/app_theme.dart';
 
 class QuickActions extends StatelessWidget {
   final bool isArabic;
+  final VoidCallback? onAddExpense;
+  final VoidCallback? onAddIncome;
+  final VoidCallback? onTransfer;
 
   const QuickActions({
     super.key,
     required this.isArabic,
+    this.onAddExpense,
+    this.onAddIncome,
+    this.onTransfer,
   });
 
   @override
@@ -19,9 +25,7 @@ class QuickActions extends StatelessWidget {
             icon: Icons.arrow_upward,
             label: isArabic ? 'مصروف' : 'Expense',
             color: AppTheme.expenseColor,
-            onTap: () {
-              // TODO: Quick add expense
-            },
+            onTap: onAddExpense,
           ),
         ),
         const SizedBox(width: 12),
@@ -31,9 +35,7 @@ class QuickActions extends StatelessWidget {
             icon: Icons.arrow_downward,
             label: isArabic ? 'دخل' : 'Income',
             color: AppTheme.incomeColor,
-            onTap: () {
-              // TODO: Quick add income
-            },
+            onTap: onAddIncome,
           ),
         ),
         const SizedBox(width: 12),
@@ -43,9 +45,7 @@ class QuickActions extends StatelessWidget {
             icon: Icons.swap_horiz,
             label: isArabic ? 'تحويل' : 'Transfer',
             color: AppTheme.primaryColor,
-            onTap: () {
-              // TODO: Transfer
-            },
+            onTap: onTransfer,
           ),
         ),
       ],
@@ -57,11 +57,11 @@ class QuickActions extends StatelessWidget {
     required IconData icon,
     required String label,
     required Color color,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
   }) {
     return Card(
       child: InkWell(
-        onTap: onTap,
+        onTap: onTap ?? () {},
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),

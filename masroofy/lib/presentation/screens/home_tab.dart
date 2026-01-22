@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../data/models/transaction_model.dart';
 import '../providers/app_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/transaction_item.dart';
 import '../widgets/quick_actions.dart';
+import 'add_transaction_screen.dart';
+import 'all_transactions_screen.dart';
+import 'transfer_screen.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -64,7 +68,19 @@ class HomeTab extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: QuickActions(isArabic: isArabic),
+              child: QuickActions(
+                isArabic: isArabic,
+                onAddExpense: () => _showAddTransaction(context, TransactionType.expense),
+                onAddIncome: () => _showAddTransaction(context, TransactionType.income),
+                onTransfer: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const TransferScreen(),
+                  );
+                },
+              ),
             ),
           ),
 
@@ -84,7 +100,12 @@ class HomeTab extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      // TODO: View all
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllTransactionsScreen(),
+                        ),
+                      );
                     },
                     child: Text(isArabic ? 'عرض الكل' : 'View All'),
                   ),
@@ -161,6 +182,15 @@ class HomeTab extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddTransaction(BuildContext context, TransactionType type) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddTransactionScreen(initialType: type),
     );
   }
 }

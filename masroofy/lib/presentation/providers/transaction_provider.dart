@@ -168,4 +168,10 @@ class TransactionProvider extends ChangeNotifier {
       return null;
     }
   }
+
+  // Clear all transactions
+  void clearAllTransactions() {
+    _transactions.clear();
+    notifyListeners();
+  }
 }
