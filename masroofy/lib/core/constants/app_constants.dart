@@ -39,8 +39,11 @@ class AppConstants {
     {'id': 'other_income', 'name': 'أخرى', 'nameEn': 'Other', 'icon': '💵', 'color': 0xFF9E9E9E},
   ];
 
-  // AdMob IDs (Test IDs - Replace with real ones)
-  static const String adMobAppId = 'ca-app-pub-2246849300811913~2496630733';
-  static const String bannerAdId = 'ca-app-pub-3940256099942544/6300978111'; // Test
-  static const String interstitialAdId = 'ca-app-pub-3940256099942544/1033173712'; // Test
+  // AdMob IDs - Masroofy iOS
+  static const String adMobAppId = 'ca-app-pub-2246849300811913~8947634228';
+  static const String bannerAdId = 'ca-app-pub-2246849300811913/4040945994';
+  static const String interstitialAdId = 'ca-app-pub-2246849300811913/3522071247';
+
+  // AdMob IDs - Masroofy Android
+  static const String adMobAndroidAppId = 'ca-app-pub-2246849300811913~1223210966';
 }
